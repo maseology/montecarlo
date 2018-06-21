@@ -8,7 +8,7 @@ import (
 	"log"
 	"math"
 
-	"github.com/maseology/maths"
+	maths "github.com/maseology/mmaths"
 )
 
 // JohnsonB (bounded) sampling distribution

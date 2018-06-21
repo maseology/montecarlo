@@ -8,7 +8,7 @@ package smpln
 import (
 	"log"
 
-	"github.com/maseology/maths"
+	"github.com/maseology/mmaths"
 )
 
 // from Faure, H., C. Lemieux (2008) Generalized Halton Sequences
@@ -50,7 +50,7 @@ func NewHalton(n, p int) *HaltonDigitalSequence {
 	}
 
 	// original Halton sequence; multiplicative factor added to the van der Corput forms the FL generalized Halton
-	b := maths.Primes(p)
+	b := mmaths.Primes(p)
 	for i := 0; i < n; i++ {
 		for j := 0; j < p; j++ {
 			// hds.U[j][i] = vanderCorput(i+1, b[j], 1) // original Halton sequence
