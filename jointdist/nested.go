@@ -21,3 +21,19 @@ func Nested2(u1, u2 float64) (float64, float64) {
 	u1 *= u2
 	return u1, u2
 }
+
+// SumToOne creates n variable such that sum(u) = 1
+func SumToOne(u ...float64) []float64 {
+	s, o := 0., make([]float64, len(u))
+	for _, v := range u {
+		s += v
+	}
+	for i := range u {
+		if i == 0 {
+			o[i] = u[i] / s
+		} else {
+			o[i] = o[i-1] + u[i]/s
+		}
+	}
+	return o
+}
