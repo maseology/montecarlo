@@ -18,8 +18,8 @@ type Trapezoid struct {
 }
 
 // NewTrapezoid constructor
-func NewTrapezoid(m, n, a, b float64) *Trapezoid {
-	if m < 0. || m > n || n > 1. || a < 0. || b < 0. {
+func NewTrapezoid(a, m, n, b float64) *Trapezoid {
+	if m < 0. || m > n || n > 1. || a > m || b < n {
 		log.Panicf("Inverse General Trapezoid: invalid arguments m, n, a, b = &v, &v, &v, &v\n", m, n, a, b)
 	}
 	t := new(Trapezoid)
@@ -33,7 +33,7 @@ func NewTrapezoid(m, n, a, b float64) *Trapezoid {
 // Inv : inverse function
 func (t *Trapezoid) Inv(f float64) float64 {
 	m, n, a, b := t.properties()
-	if m < 0. || m > n || n > 1. || a < 0. || b < 0. {
+	if m < 0. || m > n || n > 1. || a > m || b < n {
 		panic("Inverse General Trapezoid: invalid arguments")
 	}
 	pd := b*m + a*b*(n-m) + a*(1.-n)
