@@ -43,7 +43,7 @@ loop:
 		goto loop
 	}
 
-	z := math.Sqrt(2.) * maths.Erfinv(2.*f-1.)
+	z := math.Sqrt(2.) * math.Erfinv(2.*f-1.)
 	y = math.Exp((z - a1) / a2)
 	return y / (y + 1.)
 }
