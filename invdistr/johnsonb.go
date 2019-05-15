@@ -7,8 +7,6 @@ package invdistr
 import (
 	"log"
 	"math"
-
-	maths "github.com/maseology/mmaths"
 )
 
 // JohnsonB (bounded) sampling distribution
