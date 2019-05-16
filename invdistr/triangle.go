@@ -1,6 +1,6 @@
 // triangle.go returns a Triangular probability distribution
 // from u[0,1] with mode m.
-// special case: m=n, a=2, b=2: Triangular transform
+// general trapezoid special case: m=n, a=2, b=2: Triangular transform
 
 package invdistr
 
@@ -16,7 +16,7 @@ type Triangle struct {
 // from u[0,1] with mode m. (special case: m=n, a=2, b=2: Triangular transform)
 func NewTriangle(m float64) *Trapezoid {
 	if m < 0. || m > 1. {
-		log.Panicf("Inverse General Triangle: invalid arguments m = &v\n", m)
+		log.Panicf("Inverse General Triangle: invalid arguments m = %v\n", m)
 	}
 	t := new(Trapezoid)
 	t.m = m
@@ -27,7 +27,7 @@ func NewTriangle(m float64) *Trapezoid {
 }
 
 // Inv : inverse function
-func (t *Triangle) Inv(f float64) float64 {
+func (t *Triangle) Inv(u float64) float64 {
 	trap := NewTrapezoid(t.m, t.m, 2., 2.)
-	return trap.Inv(f)
+	return trap.Inv(u)
 }
