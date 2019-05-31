@@ -17,8 +17,8 @@ type Trapezoid struct {
 
 // NewTrapezoid constructor
 func NewTrapezoid(m, n, a, b float64) *Trapezoid {
-	if m < 0. || m > n || n > 1. || a < 0 || b < 0 {
-		log.Panicf("General Trapezoid distribution: invalid arguments m, n, a, b = %v, %v, %v, %v\n", m, n, a, b)
+	if m < 0. || m > n || n > 1. || a < 1. || b < 1. {
+		log.Panicf("invdistr.NewTrapezoid: General Trapezoid distribution: invalid arguments m, n, a, b = %v, %v, %v, %v\n", m, n, a, b)
 	}
 	t := new(Trapezoid)
 	t.m = m
@@ -31,21 +31,21 @@ func NewTrapezoid(m, n, a, b float64) *Trapezoid {
 // Inv : inverse function
 func (t *Trapezoid) Inv(u float64) float64 {
 	m, n, a, b := t.properties()
-	if m < 0. || m > n || n > 1. || a > m || b < n {
-		panic("Inverse General Trapezoid: invalid arguments")
+	if m < 0. || m > n || n > 1. || a < 1. || b < 1. {
+		panic("Trapezoid.Inv: Inverse General Trapezoid: invalid arguments")
 	}
 	pd := b*m + a*b*(n-m) + a*(1.-n)
 	p1 := b * m / pd
 	p2 := a * b * (n - m) / pd
 	p3 := a * (1. - n) / pd
-	if u < p1 {
+	if u <= p1 {
 		return m * math.Pow(u/p1, 1./a)
 	} else if u <= 1.-p3 {
 		return u*(n-m)/p2 + m*(1.-1./a)
 	} else if u > 1.-p3 {
 		return 1. - (1.-n)*math.Pow((1.-u)/p3, 1./b)
 	}
-	panic("error in Inverse General Trapezoid")
+	panic("Trapezoid.Inv: error in Inverse General Trapezoid")
 }
 
 func (t *Trapezoid) properties() (float64, float64, float64, float64) {
