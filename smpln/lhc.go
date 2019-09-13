@@ -46,7 +46,7 @@ type LatinHyperCube struct {
 }
 
 // NewLHC allocates a new instance of the LHC from n samples of p dimensions.
-func NewLHC(n, p int) *LatinHyperCube {
+func NewLHC(rng *rand.Rand, n, p int, midpoint bool) *LatinHyperCube {
 	lhc := &LatinHyperCube{
 		U: make([][]float64, p),
 		n: n,
@@ -55,13 +55,14 @@ func NewLHC(n, p int) *LatinHyperCube {
 	for i := range lhc.U {
 		lhc.U[i] = make([]float64, n)
 	}
+	lhc.make(rng, midpoint)
 	return lhc
 }
 
-// Make builds the sampling plan nxp matrix.
+// make builds the sampling plan nxp matrix.
 // Setting midpoint to False adds an additional random jitter
 // to the position of the sample within sample space.
-func (lhc *LatinHyperCube) Make(rng *rand.Rand, midpoint bool) {
+func (lhc *LatinHyperCube) make(rng *rand.Rand, midpoint bool) {
 	nf := float64(lhc.n)
 	w := 1.0 / (2.0 * nf)
 	ks := NewKS(lhc.n, lhc.p)
