@@ -2,12 +2,13 @@ package montecarlo
 
 import (
 	"fmt"
+	"math/rand"
 	"sort"
 	"sync"
-	"math/rand"
 	"time"
 
 	"github.com/maseology/mmaths"
+	"github.com/maseology/mmio"
 	"github.com/maseology/montecarlo/smpln"
 	mrg63k3a "github.com/maseology/pnrg/MRG63k3a"
 )
@@ -59,10 +60,10 @@ func GenerateSamples(fun func(u []float64) float64, n, s int) ([][]float64, []fl
 func RankSamples(f []float64, minimize bool) []int {
 	f2 := make([]float64, len(f))
 	copy(f2, f)
-	d := mmaths.Sequential(len(f) - 1) // resetting d
+	d := mmio.Sequential(len(f) - 1) // resetting d
 	sort.Sort(mmaths.IndexedSlice{Indx: d, Val: f2})
 	if !minimize {
-		mmaths.Rev(d) // ordering from best (highest evaluated score) to worst
+		mmio.Rev(d) // ordering from best (highest evaluated score) to worst
 	}
 	return d
 }
