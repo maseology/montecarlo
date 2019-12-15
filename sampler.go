@@ -18,8 +18,13 @@ func GenerateSamples(fun func(u []float64) float64, n, s int) ([][]float64, []fl
 	var wg sync.WaitGroup
 	smpls := make(chan []float64, s)
 	results := make(chan []float64, s)
-	wg.Add(s)
+
+	rng := rand.New(mrg63k3a.New())
+	rng.Seed(time.Now().UnixNano())
+	sp := smpln.NewLHC(rng, s, n, false) // smpln.NewHalton(s, n)
+
 	for k := 0; k < s; k++ {
+		wg.Add(1)
 		go func() {
 			defer wg.Done()
 			s := <-smpls
@@ -27,10 +32,6 @@ func GenerateSamples(fun func(u []float64) float64, n, s int) ([][]float64, []fl
 		}()
 	}
 
-	rng := rand.New(mrg63k3a.New())
-	rng.Seed(time.Now().UnixNano())
-
-	sp := smpln.NewLHC(rng, s, n, false) // smpln.NewHalton(s, n)
 	for k := 0; k < s; k++ {
 		ut := make([]float64, n)
 		for j := 0; j < n; j++ {
