@@ -22,14 +22,19 @@ func ReadMCPIG(gobfp string) {
 }
 
 // ReadMCPIGs reads a set of samplings (i.e., from multiple stations)
-func ReadMCPIGs(mcdir string) {
-	wcsv, _ := mmio.NewTXTwriter(mcdir + "summary.csv")
+func ReadMCPIGs(mcdir, prfx string) {
+	wcsv, err := mmio.NewTXTwriter(mcdir + prfx + "summary.csv")
+	if err != nil {
+		log.Fatalln(err)
+	}
 	defer wcsv.Close()
 	wcsv.WriteLine("station,bin,par,val")
+	fmt.Println("\nBuilding MCPIG summary..")
 	for _, fp := range mmio.FileListExt(mcdir, ".gob") {
-		fmt.Println(fp)
+		fmt.Println(" " + fp)
 		writeToCsv(wcsv, fp)
 	}
+	fmt.Println("Results saved to " + mcdir + prfx + "summary.csv")
 }
 
 func readGob(fp string) (sampler.Set, [][]float64, error) {
@@ -81,6 +86,9 @@ func writeToCsv(w *mmio.TXTwriter, gobfp string) {
 	par, gnam := ss.ParameterNames(), mmio.FileName(gobfp, false)
 	for j := 0; j < nbins; j++ {
 		for i := 0; i < ss.Ndim; i++ {
+			if ss.Samplers[i].Dist == sampler.Constant {
+				continue
+			}
 			score := bins[i][j] / denom
 			val := ss.Samplers[i].Sample((float64(j) + .5) / float64(nbins))
 			// w.WriteLine(fmt.Sprintf("%s,%d,%s,%f", gnam, j+1, par[i], score))
