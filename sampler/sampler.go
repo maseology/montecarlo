@@ -9,6 +9,7 @@ import (
 // Distribution enum type
 type Distribution int
 
+// Distribution enums
 const (
 	Uniform Distribution = iota
 	Linear
@@ -29,8 +30,8 @@ type Sampler struct {
 
 // New Sampler constructor
 func New(name string, d Distribution, rangeMin, rangeMax float64) *Sampler {
-	if rangeMin <= rangeMax {
-		log.Fatalf("Sampler.New error: invalid input range for %s: min <= max\n", name)
+	if rangeMin > rangeMax {
+		log.Fatalf("Sampler.New error: invalid input range for %s: min > max\n", name)
 	}
 	switch d {
 	case LogLinear:
@@ -53,5 +54,6 @@ func (s *Sampler) Sample(u float64) float64 {
 		return mm.LogLinearTransform(s.Rmin, s.Rmax, u)
 	default:
 		log.Fatalln("Sampler.Sample error: unknown distribution used")
+		return -9999.
 	}
 }

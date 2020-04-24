@@ -1,0 +1,82 @@
+package main
+
+import (
+	"encoding/gob"
+	"fmt"
+	"log"
+	"math"
+	"os"
+
+	"github.com/maseology/montecarlo/sampler"
+
+	"github.com/maseology/mmio"
+)
+
+var (
+	ndim  = 4
+	nbins = 30
+	mcdir = "S:/PanET/calibration/mc/" // "S:/ormgp_lumped/mc/"
+	outfn = "PanET_mc_summary.csv"     //"summary.csv"
+)
+
+func main() {
+	flst := mmio.FileListExt(mcdir, ".gob")
+
+	bins := make([][]float64, ndim)
+	for i := 0; i < ndim; i++ {
+		bins[i] = make([]float64, nbins)
+		for j := 0; j < nbins; j++ {
+			bins[i][j] = 0.
+		}
+	}
+
+	wcsv, _ := mmio.NewTXTwriter(mcdir + outfn)
+	wcsv.WriteLine("station,bin,par,val")
+	for _, fp := range flst {
+		gnam := fp[len(mcdir) : len(mcdir)+7]
+		fmt.Println(gnam)
+
+		readGob := func(fp string) (sampler.Plan, [][]float64) {
+			var d [][]float64
+			var s sampler.Plan
+			f, err := os.Open(fp)
+			defer f.Close()
+			if err != nil {
+				log.Fatalln(err)
+			}
+			enc := gob.NewDecoder(f)
+			err = enc.Decode(&s)
+			if err != nil {
+				log.Fatalln(err)
+			}
+			err = enc.Decode(&d)
+			if err != nil {
+				log.Fatalln(err)
+			}
+			return s, d
+		}
+
+		denom := 0.
+		smpln, coll := readGob(fp)
+		for _, v := range coll {
+			objfnc := v[0]
+			for i := 0; i < ndim; i++ {
+				ii := int(math.Floor(v[i+1] * float64(nbins)))
+				bins[i][ii] += objfnc
+			}
+			denom++
+		}
+
+		denom /= float64(nbins)
+		par := smpln.ParameterNames()
+		for j := 0; j < nbins; j++ {
+			for i := 0; i < ndim; i++ {
+				score := bins[i][j] / denom
+				val := smpln.Samplers[i].Sample((float64(j) + .5) / float64(nbins))
+				// wcsv.WriteLine(fmt.Sprintf("%s,%d,%s,%f", gnam, j+1, par[i], score))
+				wcsv.WriteLine(fmt.Sprintf("%s,%f,%s,%f", gnam, val, par[i], score))
+			}
+		}
+	}
+	wcsv.Close()
+}
