@@ -30,7 +30,7 @@ func GenerateTop(fp string, eval func(u []float64) float64, s sampler.Set, nsamp
 			}
 		}
 		if cnt >= nsamples {
-			fmt.Printf("\n  %d samples in %d iterations -- %v\n", cnt, iter, time.Now().Sub(tim))
+			fmt.Printf("\n  %d samples in %d iterations -- %v\n", cnt, iter+1, time.Now().Sub(tim))
 			saveGob(fp, s, coll)
 			break
 		}
