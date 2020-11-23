@@ -16,12 +16,12 @@ const nbins = 30
 // ReadMCPIG reads a single sampling
 func ReadMCPIG(gobfp string) {
 	wcsv, _ := mmio.NewTXTwriter(mmio.RemoveExtension(gobfp) + ".csv")
+	defer wcsv.Close()
 	wcsv.WriteLine("station,bin,par,val")
 	writeToCsv(wcsv, gobfp)
-	wcsv.Close()
 
-	// save to PNG
-	writePNG(mmio.GetFileDir(gobfp)+"/", mmio.FileName(gobfp, false)+"_")
+	// // save to PNG
+	// writePNG(mmio.GetFileDir(gobfp)+"/", mmio.FileName(gobfp, false)+"_")
 }
 
 // ReadMCPIGs reads a set of samplings (i.e., from multiple stations)
