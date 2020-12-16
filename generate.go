@@ -53,7 +53,16 @@ func GenerateSamples(fun func(u []float64) float64, n, s int) ([][]float64, []fl
 		f[k] = r[n]
 		// d[k] = k
 	}
+	close(results)
 	return u, f //, d
+}
+
+// RankedUnBiased returns s n-dimensional samples of fun()
+func RankedUnBiased(fun func(u []float64) float64, n, s int) ([][]float64, []float64, []int) {
+	fmt.Printf(" generating %d LHC samples from %d dimensions..\n", s, n)
+	u, f := GenerateSamples(fun, n, s)
+	d := RankSamples(f, true)
+	return u, f, d
 }
 
 // RankSamples ranks samples accoring to evaluation value
@@ -66,12 +75,4 @@ func RankSamples(f []float64, minimize bool) []int {
 		mmaths.Rev(d) // ordering from best (highest evaluated score) to worst
 	}
 	return d
-}
-
-// RankedUnBiased returns s n-dimensional samples of fun()
-func RankedUnBiased(fun func(u []float64) float64, n, s int) ([][]float64, []float64, []int) {
-	fmt.Printf(" generating %d LHC samples from %d dimensions..\n", s, n)
-	u, f := GenerateSamples(fun, n, s)
-	d := RankSamples(f, true)
-	return u, f, d
 }
