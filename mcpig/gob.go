@@ -7,6 +7,7 @@ import (
 	"math"
 	"os"
 
+	mmplt "github.com/maseology/mmPlot"
 	"github.com/maseology/mmio"
 	"github.com/maseology/montecarlo/sampler"
 )
@@ -164,6 +165,6 @@ func writePNG(mcdir, prfx string) {
 		if xlab[i] == nil {
 			continue
 		}
-		mmio.Bar(mcdir+prfx+n+".png", scr[i], xlab[i])
+		mmplt.Bar(mcdir+prfx+n+".png", scr[i], xlab[i])
 	}
 }
