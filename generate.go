@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/maseology/mmaths"
+	"github.com/maseology/mmaths/slice"
 	"github.com/maseology/montecarlo/smpln"
 	mrg63k3a "github.com/maseology/pnrg/MRG63k3a"
 )
@@ -69,10 +70,10 @@ func RankedUnBiased(fun func(u []float64) float64, n, s int) ([][]float64, []flo
 func RankSamples(f []float64, minimize bool) []int {
 	f2 := make([]float64, len(f))
 	copy(f2, f)
-	d := mmaths.Sequential(len(f) - 1) // resetting d
+	d := slice.Sequential(len(f) - 1) // resetting d
 	sort.Sort(mmaths.IndexedSlice{Indx: d, Val: f2})
 	if !minimize {
-		mmaths.Rev(d) // ordering from best (highest evaluated score) to worst
+		slice.Rev(d) // ordering from best (highest evaluated score) to worst
 	}
 	return d
 }
