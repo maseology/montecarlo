@@ -4,6 +4,7 @@ import (
 	"encoding/gob"
 	"fmt"
 	"os"
+	"runtime"
 	"time"
 
 	"github.com/maseology/montecarlo/sampler"
@@ -17,7 +18,7 @@ func GenerateTop(fp string, eval func(u []float64) float64, s sampler.Set, nsamp
 	cnt, iter := 0, 0
 	coll := make([][]float64, 0, nsamples*maxtrials)
 	for {
-		uFinal, rFinal := GenerateSamples(eval, s.Ndim, nsamples)
+		uFinal, rFinal := GenerateSamples(eval, s.Ndim, nsamples, runtime.GOMAXPROCS(0))
 		for i, f := range rFinal {
 			if f > minOF {
 				lst := make([]float64, s.Ndim+1)

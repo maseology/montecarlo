@@ -13,10 +13,10 @@ import (
 	mrg63k3a "github.com/maseology/pnrg/MRG63k3a"
 )
 
-// GenerateSamples returns the result from s evalutaions of fun() sampling from n-hypercube
-func GenerateSamples(fun func(u []float64) float64, n, s int) ([][]float64, []float64) { // ([][]float64, []float64, []int) {
+// GenerateSamples returns the result from s evaluations of fun() sampling from n-hypercube
+func GenerateSamples(fun func(u []float64) float64, n, s, nthrd int) ([][]float64, []float64) { // ([][]float64, []float64, []int) {
 	var wg sync.WaitGroup
-	smpls := make(chan []float64, s)
+	smpls := make(chan []float64, nthrd)
 	results := make(chan []float64, s)
 
 	rng := rand.New(mrg63k3a.New())
@@ -26,9 +26,9 @@ func GenerateSamples(fun func(u []float64) float64, n, s int) ([][]float64, []fl
 	for k := 0; k < s; k++ {
 		wg.Add(1)
 		go func() {
-			defer wg.Done()
 			s := <-smpls
 			results <- append(s, fun(s))
+			wg.Done()
 		}()
 	}
 
@@ -59,9 +59,9 @@ func GenerateSamples(fun func(u []float64) float64, n, s int) ([][]float64, []fl
 }
 
 // RankedUnBiased returns s n-dimensional samples of fun()
-func RankedUnBiased(fun func(u []float64) float64, n, s int) ([][]float64, []float64, []int) {
+func RankedUnBiased(fun func(u []float64) float64, n, s, nthrd int) ([][]float64, []float64, []int) {
 	fmt.Printf(" generating %d LHC samples from %d dimensions..\n", s, n)
-	u, f := GenerateSamples(fun, n, s)
+	u, f := GenerateSamples(fun, n, s, nthrd)
 	d := RankSamples(f, true)
 	return u, f, d
 }
