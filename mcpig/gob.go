@@ -34,7 +34,11 @@ func ReadMCPIGs(mcdir, prfx string) {
 	defer wcsv.Close()
 	wcsv.WriteLine("station,bin,par,val")
 	fmt.Println("\nBuilding MCPIG summary..")
-	for _, fp := range mmio.FileListExt(mcdir, ".gob") {
+	fps, err := mmio.FileListExt(mcdir, ".gob")
+	if err != nil {
+		panic(err)
+	}
+	for _, fp := range fps {
 		fmt.Println(" " + fp)
 		writeToCsv(wcsv, fp)
 	}
@@ -125,7 +129,11 @@ func writePNG(mcdir, prfx string) {
 	var pars []string
 	var scr [][]float64
 	var xlab [][]string
-	for _, fp := range mmio.FileListExt(mcdir, ".gob") {
+	fps, err := mmio.FileListExt(mcdir, ".gob")
+	if err != nil {
+		panic(err)
+	}
+	for _, fp := range fps {
 		ss, bins := collectBins(fp)
 		if len(pars) == 0 {
 			pars = ss.ParameterNames()
@@ -139,14 +147,14 @@ func writePNG(mcdir, prfx string) {
 				scr[i] = make([]float64, nbins)
 				xlab[i] = make([]string, nbins)
 				for j := 0; j < nbins; j++ {
-					var v float64
+					// var v float64
 					// switch ss.Samplers[i].Dist {
 					// case sampler.LogLinear:
 					// 	v = math.Log10(ss.Samplers[i].Sample((float64(j) + .5) / float64(nbins)))
 					// default:
 					// 	v = ss.Samplers[i].Sample((float64(j) + .5) / float64(nbins))
 					// }
-					v = ss.Samplers[i].Sample((float64(j) + .5) / float64(nbins))
+					v := ss.Samplers[i].Sample((float64(j) + .5) / float64(nbins))
 					xlab[i][j] = fmt.Sprintf(mfmt, v)
 				}
 			}
