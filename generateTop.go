@@ -13,7 +13,7 @@ import (
 const maxtrials = 10
 
 // GenerateTop returns nsamples of function evaluations that exceed the minOF
-func GenerateTop(fp string, eval func(u []float64) float64, s sampler.Set, nsamples int, minOF float64) {
+func GenerateTop(fp string, eval func(u []float64, i int) float64, s sampler.Set, nsamples int, minOF float64) {
 	tim := time.Now()
 	cnt, iter := 0, 0
 	coll := make([][]float64, 0, nsamples*maxtrials)
