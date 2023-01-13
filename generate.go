@@ -13,8 +13,9 @@ import (
 	mrg63k3a "github.com/maseology/pnrg/MRG63k3a"
 )
 
-// GenerateSamples returns the result from s evaluations of fun() sampling from n-hypercube
+// GenerateSamples returns the result from n evaluations of fun() sampling from p-hypercube
 func GenerateSamples(fun func(u []float64, i int) float64, n, p, nthrd int) ([][]float64, []float64) { // ([][]float64, []float64, []int) {
+	fmt.Printf("generating %d samples of %d parameters, %d at a time..\n", n, p, nthrd)
 	var wg sync.WaitGroup
 	smpls := make(chan []float64, nthrd)
 	results := make(chan []float64, n)
