@@ -83,3 +83,14 @@ func (lhc *LatinHyperCube) make(rng *rand.Rand, midpoint bool) {
 
 // SampleSize simply returns the number of samples
 func (lhc *LatinHyperCube) SampleSize() int { return lhc.n }
+
+func (lhc *LatinHyperCube) UT() [][]float64 {
+	ut := make([][]float64, lhc.n)
+	for i := 0; i < lhc.n; i++ {
+		ut[i] = make([]float64, lhc.p)
+		for j := 0; j < lhc.p; j++ {
+			ut[i][j] = lhc.U[j][i]
+		}
+	}
+	return ut
+}
