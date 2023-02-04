@@ -26,11 +26,11 @@ func GenerateSamples(fun func(u []float64, i int) float64, n, p, nthrd int) ([][
 
 	for k := 0; k < n; k++ {
 		wg.Add(1)
-		go func() {
+		go func(k int) {
 			s := <-smpls
 			results <- append(s, fun(s, k))
 			wg.Done()
-		}()
+		}(k)
 	}
 
 	for k := 0; k < n; k++ {
