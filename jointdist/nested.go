@@ -29,11 +29,11 @@ func SumToOne(u ...float64) []float64 {
 		s += v
 	}
 	for i := range u {
-		if i == 0 {
-			o[i] = u[i] / s
-		} else {
-			o[i] = o[i-1] + u[i]/s
-		}
+		// if i == 0 {
+		o[i] = u[i] / s
+		// } else {
+		// 	o[i] = o[i-1] + u[i]/s
+		// }
 	}
 	return o
 }
