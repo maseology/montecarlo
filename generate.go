@@ -7,10 +7,10 @@ import (
 	"sync"
 	"time"
 
+	mrg63k3a "github.com/maseology/goRNG/MRG63k3a"
 	"github.com/maseology/mmaths"
 	"github.com/maseology/mmaths/slice"
 	"github.com/maseology/montecarlo/smpln"
-	mrg63k3a "github.com/maseology/pnrg/MRG63k3a"
 )
 
 // GenerateSamples returns the result from n evaluations of fun() sampling from p-hypercube
