@@ -5,13 +5,16 @@
 package smpln
 
 import (
+	"fmt"
+
 	"github.com/maseology/mmaths"
 )
 
 // Permutations returns a sampling plan [0,1]
-// p: dimention; w: number of discrete samples
+// p: dimension; w: number of discrete samples
 func Permutations(p, w int) [][]float64 {
 	ip, n, d := intPermute(p, w), mmaths.IntPow(w, p), float64(w-1)
+	fmt.Println(ip)
 	u := make([][]float64, n)
 	for i := 0; i < n; i++ {
 		u[i] = make([]float64, p)
