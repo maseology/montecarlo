@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"math/rand"
 	"sort"
-	"sync"
 	"time"
 
 	mrg63k3a "github.com/maseology/goRNG/MRG63k3a"
@@ -19,50 +18,65 @@ func GenerateSamples(fun func(u []float64, i int) float64, n, p, nthrd int) ([][
 		nthrd = n
 	}
 	fmt.Printf("generating %d samples of %d parameters, %d at a time..\n", n, p, nthrd)
-	var wg sync.WaitGroup
-	smpls := make(chan []float64, nthrd)
-	results := make(chan []float64, n)
 
 	rng := rand.New(mrg63k3a.New())
 	rng.Seed(time.Now().UnixNano())
-	sp := smpln.NewLHC(rng, n, p, false) // smpln.NewHalton(s, n)
+	sp := smpln.NewLHC(rng, n, p, false)
+	// smpln.NewHalton(s, n)
 
-	for k := 0; k < n; k++ {
-		wg.Add(1)
-		go func(k int) {
-			s := <-smpls
-			results <- append(s, fun(s, k))
-			wg.Done()
-		}(k)
+	type sample struct {
+		u []float64
+		k int
+	}
+	type result struct {
+		u []float64
+		f float64
+		k int
 	}
 
-	for k := 0; k < n; k++ {
-		ut := make([]float64, p)
-		for j := 0; j < p; j++ {
-			ut[j] = sp.U[j][k]
+	smpl := make(chan sample)
+	res := make(chan result)
+	done := make(chan any)
+
+	// spin-up nthrd workers
+	for i := 0; i < nthrd; i++ {
+		go func() {
+			for {
+				select {
+				case <-done:
+					return
+				case s := <-smpl:
+					res <- result{s.u, fun(s.u, s.k), s.k}
+				}
+			}
+		}()
+	}
+
+	go func() {
+		for k := 0; k < n; k++ {
+			s := make([]float64, p)
+			for j := 0; j < p; j++ {
+				s[j] = sp.U[j][k]
+			}
+			smpl <- sample{s, k}
 		}
-		smpls <- ut
-	}
-	wg.Wait()
-	close(smpls)
+	}()
 
-	f := make([]float64, n) // function value
-	// d := make([]int, n)       // function index, used for ranking
+	f := make([]float64, n)   // function value
 	u := make([][]float64, n) // sample points
 	for k := 0; k < n; k++ {
-		u[k] = make([]float64, p)
-		r := <-results
-		for j := 0; j < p; j++ {
-			u[k][j] = r[j]
-		}
-		f[k] = r[p]
-		// d[k] = k
+		r := <-res
+		u[r.k] = r.u
+		f[r.k] = r.f
 	}
-	close(results)
-	return u, f //, d
+	close(done)
+	close(smpl)
+	close(res)
+
+	return u, f
 }
 
-// RankedUnBiased returns s n-dimensional samples of fun()
+// RankedUnBiased returns s n-dimensional samples of fun(), ranking samples accoring to evaluation value
 func RankedUnBiased(fun func(u []float64, i int) float64, n, s, nthrd int) ([][]float64, []float64, []int) {
 	fmt.Printf(" generating %d LHC samples from %d dimensions..\n", s, n)
 	u, f := GenerateSamples(fun, n, s, nthrd)
